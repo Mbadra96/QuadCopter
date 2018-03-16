@@ -32,21 +32,21 @@ class make_decision:
 
 
     def diagnose(self,msg):
-        if msg.current_1 > 20 ##the current limit
+        if msg.current_1 > 16 ##the current limit
             self.current = 1
-            self.status_pub.publish('WARNING: The current in motor 1 over 20 Amps ')
-        if msg.current_2 > 20
+            self.status_pub.publish('WARNING: The current in motor 1 over 16 Amps ')
+        if msg.current_2 > 16
             self.current = 1
-            self.status_pub.publish('WARNING: The current in motor 2 over 20 Amps ')
-        if msg.current_3 > 20
+            self.status_pub.publish('WARNING: The current in motor 2 over 16 Amps ')
+        if msg.current_3 > 16
             self.current = 1
-            self.status_pub.publish('WARNING: The current in motor 3 over 20 Amps ')
-        if msg.current_4 > 20
+            self.status_pub.publish('WARNING: The current in motor 3 over 16 Amps ')
+        if msg.current_4 > 16
             self.current = 1
-            self.status_pub.publish('WARNING: The current in motor 4 over 20 Amps ')
-        if msg.battery < 30
+            self.status_pub.publish('WARNING: The current in motor 4 over 16 Amps ')
+        if msg.battery < 20
             self.battry=1
-            self.status_pub.publish('WARNING: The battery is lower than 30 %')
+            self.status_pub.publish('WARNING: The battery is lower than 20 %')
         if self.current_flag == 0 and self.battry == 0:
             a='Every Thing is OK ENJOY :)',\
               'Battery : ',msg.battery
