@@ -74,8 +74,8 @@ void receiveEvent(int howMany) {
 float getbattery(){
   //read v0,va,vb
   float v0=analogRead(battery_v0)*(5.0/1023);
-  float va=analogRead(battery_v0)*(5.0/1023);
-  float vb=analogRead(battery_v0)*(5.0/1023);
+  float va=analogRead(battery_va)*(5.0/1023);
+  float vb=analogRead(battery_vb)*(5.0/1023);
   //get v1,v2
   float v1 = va*((r1+r2)/r2)-v0;
   float v2 = vb*((r3+r4)/r4)-v1-v2;
