@@ -102,5 +102,27 @@ distance= duration*0.034/2;
         Wire.write(x);
         d=0;
       }
+  
+   /*/ void SendData(){
+      digitalWrite(trigPin, LOW);
+      delayMicroseconds(2);
+      digitalWrite(trigPin, HIGH);
+      delayMicroseconds(10);
+      digitalWrite(trigPin, LOW);
+      duration = pulseIn(echoPin, HIGH);
+      distance= duration*0.034/2; 
+       int x = map((int)analogRead(current_1),0,1023,0,255);
+       Wire.write(x);
+        x = map((int)analogRead(current_2),0,1023,0,255);
+        Wire.write(x);
+        x = map((int)analogRead(current_3),0,1023,0,255);
+        Wire.write(x);
+        x = map((int)analogRead(current_4),0,1023,0,255);
+        Wire.write(x);
+        x = map((int)analogRead(battery),0,1023,0,255);
+        Wire.write(x);
+        x = distance;
+        Wire.write(x);
+    } /*/
  
   }
