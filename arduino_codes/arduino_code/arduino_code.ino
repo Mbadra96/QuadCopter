@@ -1,25 +1,25 @@
 
 #include <Wire.h>
-
+#include <Servo.h>
 const int current_1=A0;
 const int current_2=A1;
 const int current_3=A2;
 const int current_4=A3;
 const int battery_v0=A4;
 const int battery_va=A5;
-const int battery_vb=A6;
+const int battery_vb=A7;
 const int trigPin = 12;
 const int echoPin = 13;
-const int motor_1=5;
-const int motor_2=6;
-const int motor_3=9;
-const int motor_4=10;
 float data[6];
 float motor[4];
 int z=0;
 int d=0;
 long duration;
 float distance;
+Servo motor_1;
+Servo motor_2;
+Servo motor_3;
+Servo motor_4;
 //resistance for battery circuit
 
 float r1 = 1000;
@@ -32,11 +32,11 @@ void setup() {
   Wire.onRequest(sendData);               // register event
   Serial.begin(9600);  
   pinMode(trigPin, OUTPUT); 
-  pinMode(echoPin, INPUT);
-  pinMode(motor_1,OUTPUT);
-  pinMode(motor_2,OUTPUT);
-  pinMode(motor_3,OUTPUT);
-  pinMode(motor_4,OUTPUT);
+  motor_1.attach(3);
+  motor_2.attach(4);
+  motor_3.attach(5);
+  motor_4.attach(6); 
+  
 }
 
 void loop() {
@@ -49,41 +49,29 @@ void receiveEvent(int howMany) {
   
   while (0 < Wire.available()) { // loop through all but the last
       if(z==0){
-        double x = map(Wire.read(),0,17000,0,255);
-        analogWrite(motor_1 , x);
+        double x = map(Wire.read(),0,255,700,2300);
+        motor_1.writeMicroseconds(x);
         z++;
       }
       else if(z==1){
-        double x = map(Wire.read(),0,17000,0,255);
-        analogWrite(motor_2 , x);
+        double x = map(Wire.read(),0,255,700,2300);
+        motor_2.writeMicroseconds(x);
         z++;
       }
        else if(z==2){
-        double x = map(Wire.read(),0,17000,0,255);
-        analogWrite(motor_3 , x);
+        double x = map(Wire.read(),0,255,700,2300);
+        motor_3.writeMicroseconds(x);
         z++;
       }
       else if(z==3){
-        double x = map(Wire.read(),0,17000,0,255);
-        analogWrite(motor_4 , x);
+        double x = map(Wire.read(),0,255,700,2300);
+        motor_4.writeMicroseconds(x);
         z=0;
       }
   }
   
 }
-float getbattery(){
-  //read v0,va,vb
-  float v0=analogRead(battery_v0)*(5.0/1023);
-  float va=analogRead(battery_va)*(5.0/1023);
-  float vb=analogRead(battery_vb)*(5.0/1023);
-  //get v1,v2
-  float v1 = va*((r1+r2)/r2)-v0;
-  float v2 = vb*((r3+r4)/r4)-v1-v2;
-  float sum = v0+v1+v2;
-  //battery capacity calculations
-  float battery_capacity=100.0-((100.0*(12.6-sum))/(12.6-9.0));//12.6v is fully charged and 9v is empty charged
-  return battery_capacity;
-  }
+
 void sendData(){
 digitalWrite(trigPin, LOW);
 delayMicroseconds(2);
@@ -99,7 +87,13 @@ distance= duration*0.034/2;
    data[1]= analogRead(current_2)*(5.0/1023);
    data[2]= analogRead(current_3)*(5.0/1023);
    data[3]= analogRead(current_4)*(5.0/1023);
-   data[4] = getbattery();
-   data[5] =distance;
-   Wire.write((byte*) &data,6*sizeof(float));
+   data[4]=analogRead(battery_v0)*(5.0/1023);
+   data[5]=analogRead(battery_va)*(5.0/1023);
+   data[6]=analogRead(battery_vb)*(5.0/1023);
+   Serial.println(data[4])*(5.0/1023);
+   Serial.println(data[5])*(5.0/1023);
+   Serial.println(data[6])*(5.0/1023);
+   Serial.println("-----");
+   data[7] =distance;
+   Wire.write((byte*) &data,8*sizeof(float));
   }
