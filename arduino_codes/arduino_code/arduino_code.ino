@@ -10,12 +10,17 @@ const int battery_va=A5;
 const int battery_vb=A7;
 const int trigPin = 12;
 const int echoPin = 13;
-float data[6];
+float data[4];
 float motor[4];
 int z=0;
 int d=0;
 long duration;
 float distance;
+byte current1;
+byte current2;
+byte current3;
+byte current4;
+byte current[4];
 Servo motor_1;
 Servo motor_2;
 Servo motor_3;
@@ -27,16 +32,16 @@ float r2 = 1000;
 float r3 = 2000;
 float r4 = 1000;
 void setup() {
-  Wire.begin(0x40);                // join i2c bus with address #40
+  Wire.begin(0x40);        // join i2c bus with address #40
   Wire.onReceive(receiveEvent);
   Wire.onRequest(sendData);               // register event
-  Serial.begin(9600);  
   pinMode(trigPin, OUTPUT); 
+//  Serial.begin(9600);
   motor_1.attach(3);
   motor_2.attach(4);
   motor_3.attach(5);
   motor_4.attach(6); 
-  
+  getdata();
 }
 
 void loop() {
@@ -71,8 +76,7 @@ void receiveEvent(int howMany) {
   }
   
 }
-
-void sendData(){
+float getdistance(){
 digitalWrite(trigPin, LOW);
 delayMicroseconds(2);
 // Sets the trigPin on HIGH state for 10 micro seconds
@@ -82,18 +86,34 @@ digitalWrite(trigPin, LOW);
 // Reads the echoPin, returns the sound wave travel time in microseconds
 duration = pulseIn(echoPin, HIGH);
 // Calculating the distance
-distance= duration*0.034/2;   
-   data[0]= analogRead(current_1)*(5.0/1023);
-   data[1]= analogRead(current_2)*(5.0/1023);
-   data[2]= analogRead(current_3)*(5.0/1023);
-   data[3]= analogRead(current_4)*(5.0/1023);
-   data[4]=analogRead(battery_v0)*(5.0/1023);
-   data[5]=analogRead(battery_va)*(5.0/1023);
-   data[6]=analogRead(battery_vb)*(5.0/1023);
-   Serial.println(data[4])*(5.0/1023);
-   Serial.println(data[5])*(5.0/1023);
-   Serial.println(data[6])*(5.0/1023);
-   Serial.println("-----");
-   data[7] =distance;
-   Wire.write((byte*) &data,8*sizeof(float));
+return duration*0.034/2;  
+  
+  }
+void getdata(){
+   current[0]= (byte) map(analogRead(current_1),0,1023,0,255);
+   current[1]= (byte) map(analogRead(current_2),0,1023,0,255);
+   current[2]= (byte) map(analogRead(current_3),0,1023,0,255);
+   current[3]= (byte) map(analogRead(current_4),0,1023,0,255);
+   data[0]=(float)analogRead(battery_v0);
+   data[1]=(float)analogRead(battery_va);
+   data[2]=(float)analogRead(battery_vb);
+   data[3] =getdistance();
+  }
+void sendData(){
+//     Serial.print(current[0]);
+//   Serial.print("   ");
+//   Serial.print(current[1]);
+//   Serial.print("   ");
+//   Serial.print(current[2]);
+//   Serial.print("   ");
+//   Serial.println(current[3]);
+   if(d==0){
+      Wire.write((byte*)&current,4*sizeof(byte));
+      d++;
+      }
+      else if(d==1){
+    Wire.write((byte*) &data,4*sizeof(float));
+    getdata();
+    d=0;
+    }
   }
