@@ -32,7 +32,9 @@ float r2 = 1000;
 float r3 = 2000;
 float r4 = 1000;
 void setup() {
-  Wire.begin(0x40);        // join i2c bus with address #40
+  MCUSR |= _BV(PUD);
+  Wire.begin(0x40); 
+// / Serial.begin(9600);// join i2c bus with address #40
   Wire.onReceive(receiveEvent);
   Wire.onRequest(sendData);               // register event
   pinMode(trigPin, OUTPUT); 
@@ -55,21 +57,29 @@ void receiveEvent(int howMany) {
   while (0 < Wire.available()) { // loop through all but the last
       if(z==0){
         double x = map(Wire.read(),0,255,700,2300);
+//        Serial.print(x);
+//        Serial.print("  ");
         motor_1.writeMicroseconds(x);
         z++;
       }
       else if(z==1){
         double x = map(Wire.read(),0,255,700,2300);
+///        Serial.print(x);
+//   /     Serial.print("  ");
         motor_2.writeMicroseconds(x);
         z++;
       }
        else if(z==2){
         double x = map(Wire.read(),0,255,700,2300);
+//      /  Serial.print(x);
+//   /     Serial.print("  ");
         motor_3.writeMicroseconds(x);
         z++;
       }
       else if(z==3){
         double x = map(Wire.read(),0,255,700,2300);
+//      /  Serial.print(x);
+//        /Serial.println("  ");
         motor_4.writeMicroseconds(x);
         z=0;
       }
