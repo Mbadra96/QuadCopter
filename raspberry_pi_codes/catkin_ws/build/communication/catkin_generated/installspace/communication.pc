@@ -1,0 +1,8 @@
+prefix=/home/magnam/catkin_ws/install
+
+Name: communication
+Description: Description of communication
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/magnam/catkin_ws/install/lib 
+Requires: decisicon_make geometry_msgs roscpp rospy sensor_msgs std_msgs
