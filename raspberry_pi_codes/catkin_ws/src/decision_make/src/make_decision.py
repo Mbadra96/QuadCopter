@@ -1,63 +1,53 @@
 #!/usr/bin/env python
 import rospy 
 from decision_make.msg import *
-from std_msgs.msg import String,Bool
+from std_msgs.msg import String,Bool,Empty
 
 class make_decision:
     def __init__(self):
         #initializing the attributes
-        self.motor_1=0
-        self.motor_2=0
-        self.motor_3=0
-        self.motor_4=0
-	self.emergency_mode=False
+        self.rpm =rpm_msg()
+        self.rpm.motor_1 = 0
+        self.rpm.motor_2 = 0
+        self.rpm.motor_3 = 0
+        self.rpm.motor_4 = 0
+        self.emergency_mode=False
         #initializing the node
         rospy.init_node('make_decision')
-        self.diagnose_sub = rospy.Subscriber('diagnose_state', Bool, self.diagnose)
-        self.matlab_sub = rospy.Subscriber('rpm', rpm_msg, self.matlab_assign)
-        self.motors_pub = rospy.Publisher('motors',rpm_msg,queue_size = 1)
+        self.diagnose_sub = rospy.Subscriber('decision_make/diagnose_state', Bool, self.diagnose)
+        self.matlab_sub = rospy.Subscriber('matlab/rpm', rpm_msg, self.matlab_assign)
+        self.motors_pub = rospy.Publisher('decision_make/motors',rpm_msg,queue_size = 1)
+        self.hz = rospy.Subscriber("heartbeat_hz",Empty,self.loop) #this is the heartbeat of the whole code
 
 
     def diagnose(self,msg):
-	    self.emergency_mode= not msg.data
-	    if self.emergency_mode:
-		self.emergency()
+        self.emergency_mode= not msg.data
+	    rospy.logdebug('emergency_mode is: %r'%emergency_mode)
+        if self.emergency_mode:
+            self.emergency()
 		
 
     def matlab_assign(self,msg):
-	if not self.emergency_mode:
-            self.motor_1=msg.motor_1
-            self.motor_2=msg.motor_2
-            self.motor_3=msg.motor_3
-            self.motor_4=msg.motor_4
+        if not self.emergency_mode:
+            self.rpm=msg
 	    
 
-        
 
     def emergency(self):
-	#os.sys("rosrun control stabilization.py")
-        self.motor_1 = 0
-        self.motor_2 = 0
-        self.motor_3 = 0
-        self.motor_4 = 0
-    
+        rospy.logdebug('emergency_mode has been entered')
+        self.rpm.motor_1 = 0
+        self.rpm.motor_2 = 0
+        self.rpm.motor_3 = 0
+        self.rpm.motor_4 = 0
+        
 
-    def motor_control(self):
-        rpm =rpm_msg()
-        rpm.motor_1 = self.motor_1
-        rpm.motor_2 = self.motor_2
-        rpm.motor_3 = self.motor_3
-        rpm.motor_4 = self.motor_4
-        self.motors_pub.publish(rpm)
-
-
-
+    def loop(self,msg):
+        self.motors_pub.publish(self.rpm)
 
 
 if __name__ == '__main__':
 	
-	dec_node = make_decision()
-	r=rospy.Rate(20)
-	while not rospy.is_shutdown():
-		dec_node.motor_control()
-		r.sleep()
+    dec_node = make_decision()
+    rospy.spin()
+		
+	

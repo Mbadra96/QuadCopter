@@ -16,27 +16,26 @@ def callback(msg):
 
 	if 'badra-mrslab' not in names:
 		f=False
-		state.publish('WARNING:Connection Lost with the HeadUnit')
+		rospy.logerror('Connection Lost with the HeadUnit')
 	if msg.battery <25:
 		f=False
-		state.publish( 'battery less than 25%')
+		rospy.logwarn('Battery less than : %f'%float(msg.battery))
 	if msg.current_1 > 16:
 		f=False
-		state.publish('current 1 more than 16A')
+		rospy.logfatal('current of rotor 1 more than : %f'%float(msg.current_1))
 	if msg.current_2 > 16:
 		f=False
-		state.publish( 'current 2 more than 16A')
+		rospy.logfatal('current of rotor 2 more than : %f'%float(msg.current_2))
 	if msg.current_3 > 16:
 		f=False
-		state.publish( 'current 3 more than 16A')
+		rospy.logfatal('current of rotor 3 more than : %f'%float(msg.current_3))
 	if msg.current_4 > 16:
 		f=False
-		state.publish( 'current 4 more than 16A')	
+		rospy.logfatal('current of rotor 4 more than : %f'%float(msg.current_4))	
 	pub.publish(f)
 	
 
 rospy.init_node('diagnose')
-pub = rospy.Publisher('diagnose_state',Bool,queue_size=1)
-sub = rospy.Subscriber('current_battery',diagnose_msg,callback)
-state = rospy.Publisher('status',String,queue_size=1)
+pub = rospy.Publisher('decision_make/diagnose_state',Bool,queue_size=1)
+sub = rospy.Subscriber('communication/diagnose_data',diagnose_msg,callback)
 rospy.spin()

@@ -7,7 +7,7 @@ from std_msgs.msg import Float32
 
 bus = smbus.SMBus(1)
 address = 0x1e
-rospy.init_node('magno')
+rospy.init_node('magnometer')
 
 def read_byte(adr):
     return bus.read_byte_data(address, adr)
@@ -34,16 +34,17 @@ write_byte(2, 0b00000000) # Continuous sampling
 
 scale = 0.92
 
+
+def loop(msg):
+    x_out = read_word_2c(3) * scale
+    y_out = read_word_2c(7) * scale
+    z_out = read_word_2c(5) * scale
+
+    bearing  = math.atan2(y_out, x_out) 
+    if (bearing < 0):
+            bearing += 2 * math.pi
+    pub.publish(math.degrees(bearing))
+
+
 pub=rospy.Publisher('magnetometer',Float32,queue_size=1)
-r=rospy.Rate(10)
-while not rospy.is_shutdown():
-	x_out = read_word_2c(3) * scale
-	y_out = read_word_2c(7) * scale
-	z_out = read_word_2c(5) * scale
-
-	bearing  = math.atan2(y_out, x_out) 
-	if (bearing < 0):
-    		bearing += 2 * math.pi
-	pub.publish(math.degrees(bearing))
-	r.sleep()
-
+hz = rospy.Subscriber("heartbeat_hz",Empty,loop)

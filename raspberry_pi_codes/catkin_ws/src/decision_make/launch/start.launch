@@ -1,13 +1,26 @@
 <launch>
-  <node name="make_decision" pkg="decision_make" type="make_decision.py" />
-  <node name="diagnose" pkg="decision_make" type="diagnose.py" />
-  <node name="master_discovery" pkg ="master_discovery_fkie" type="master_discovery" >
-    <param name="mcast_group" value="224.0.0.1" />
-    <param name="heatbeat_hz" value="2" />
-  </node>
-  <node name="master_sync" pkg="master_sync_fkie" type="master_sync" />
-  <node name="gyro" pkg="sensors" type="gyro.py"/>
-  <node name="accelerometer" pkg="sensors" type="acc.py"/>
-  <node name="magnometer" pkg="sensors" type="magno.py"/>
-  <node name="communication" pkg="communication" type="i2c_communication.py" output="screen"/>
+
+  <group ns="Magnam">
+
+    <!-- Decision_make pkg-->
+    <node name="make_decision" pkg="decision_make" type="make_decision.py" />
+    <node name="diagnose" pkg="decision_make" type="diagnose.py" />
+    <node pkg="decision_make" type="heartbeat_publisher.py" name="heartbeat_hz" output="screen"/>
+
+
+
+    <!--Communication pkg-->
+    <node name="master_discovery" pkg ="master_discovery_fkie" type="master_discovery" >
+      <param name="mcast_group" value="224.0.0.1" />
+      <param name="heatbeat_hz" value="2" />
+    </node>
+    <node name="master_sync" pkg="master_sync_fkie" type="master_sync" />
+    <node name="motors" pkg="communication" type="i2c_sensors.py" output="screen"/>
+
+    <!--Sensors pkg-->
+    <node name="diagnose_sensors" pkg="communication" type="i2c_sensors.py" output="screen"/>
+    <node name="gyro" pkg="sensors" type="gyro.py"/>
+    <node name="accelerometer" pkg="sensors" type="acc.py"/>
+    <node name="magnometer" pkg="sensors" type="magno.py"/>
+  </group>
 </launch>

@@ -61,9 +61,12 @@ class Adafruit_ADXL345(Adafruit_I2C):
 
     def __init__(self, busnum=-1, debug=False):
 
+
         self.accel = Adafruit_I2C(self.ADXL345_ADDRESS, busnum, debug)
-	self.pub = rospy.Publisher('accelorometer',Vector3,queue_size=1)
-	rospy.init_node('accel')
+	    
+	    rospy.init_node('accelorometer')
+        self.pub = rospy.Publisher('accelorometer',Vector3,queue_size=1)
+        self.hz = rospy.Subscriber("heartbeat_hz",Empty,self.loop)
         if self.accel.readU8(self.ADXL345_REG_DEVID) == 0xE5:
             # Enable the accelerometer
             self.accel.write8(self.ADXL345_REG_POWER_CTL, 0x08)
@@ -94,27 +97,28 @@ class Adafruit_ADXL345(Adafruit_I2C):
 
     # Read the accelerometer
     def read(self):
-	msg=Vector3()
+        msg=Vector3()
         raw = self.accel.readList(self.ADXL345_REG_DATAX0, 6)
         res = []
+        
         for i in range(0, 6, 2):
             g = raw[i] | (raw[i+1] << 8)
             if g > 32767: g -= 65536
             res.append(g)
-	msg.x=res[0]
-	msg.y=res[1]
-	msg.z=res[2]
+
+        msg.x=res[0]
+        msg.y=res[1]
+        msg.z=res[2]
+        
         return msg
 
 
-# Simple example prints accelerometer data once per second:
+    def loop(self,msg):
+        accel.pub.publish(accel.read())
+
+
 if __name__ == '__main__':
 
-    from time import sleep
-
     accel = Adafruit_ADXL345()
-    r=rospy.Rate(10)
-    print '[Accelerometer X, Y, Z]'
-    while not rospy.is_shutdown():
-	accel.pub.publish(accel.read())
-        r.sleep() # Output is fun to watch if this is commented out
+    rospy.spin()
+    
