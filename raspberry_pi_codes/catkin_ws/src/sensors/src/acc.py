@@ -25,6 +25,7 @@
 from Adafruit_I2C import Adafruit_I2C
 from geometry_msgs.msg import Vector3
 import rospy
+from std_msgs.msg import Empty
 
 class Adafruit_ADXL345(Adafruit_I2C):
 
@@ -63,8 +64,7 @@ class Adafruit_ADXL345(Adafruit_I2C):
 
 
         self.accel = Adafruit_I2C(self.ADXL345_ADDRESS, busnum, debug)
-	    
-	    rospy.init_node('accelorometer')
+        rospy.init_node('accelorometer')
         self.pub = rospy.Publisher('accelorometer',Vector3,queue_size=1)
         self.hz = rospy.Subscriber("heartbeat_hz",Empty,self.loop)
         if self.accel.readU8(self.ADXL345_REG_DEVID) == 0xE5:

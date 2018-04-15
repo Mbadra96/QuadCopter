@@ -5,6 +5,7 @@ from time import sleep
 import smbus
 import string
 from geometry_msgs.msg import Vector3
+from std_msgs.msg import Empty
 import rospy
 
 #converts 16 bit two's compliment reading to signed int

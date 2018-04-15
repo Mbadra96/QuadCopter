@@ -3,7 +3,7 @@ import smbus
 import time
 import math
 import rospy
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32,Empty
 
 bus = smbus.SMBus(1)
 address = 0x1e

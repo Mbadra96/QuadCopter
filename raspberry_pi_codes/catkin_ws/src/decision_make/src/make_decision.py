@@ -22,7 +22,7 @@ class make_decision:
 
     def diagnose(self,msg):
         self.emergency_mode= not msg.data
-	    rospy.logdebug('emergency_mode is: %r'%emergency_mode)
+        rospy.logdebug('emergency_mode is: %r'%emergency_mode)
         if self.emergency_mode:
             self.emergency()
 		

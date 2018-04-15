@@ -77,28 +77,28 @@ switch (command) {
 }
   }
 void write_motor1(int value){
-  PORTD = 0B000001000;
+  PORTD = 0B000001000; //pin 3
   delayMicroseconds(value);
   PORTD = 0B000000000;
   delayMicroseconds(20000-value);
   
   }
 void write_motor2(int value){
-  PORTD = 0B000010000;
+  PORTD = 0B000010000;// pin 4
   delayMicroseconds(value);
   PORTD = 0B000000000;
   delayMicroseconds(20000-value);
   
   }
 void write_motor3(int value){
-  PORTD = 0B000100000;
+  PORTD = 0B000100000;// pin 5
   delayMicroseconds(value);
   PORTD = 0B000000000;
   delayMicroseconds(20000-value);
   
   }
 void write_motor4(int value){
-  PORTD = 0B001000000;
+  PORTD = 0B001000000;//pin 6
   delayMicroseconds(value);
   PORTD = 0B000000000;
   delayMicroseconds(20000-value);
